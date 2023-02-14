@@ -1,7 +1,10 @@
 const express = require("express");
 const authRoutes = require("./routes/auth");
+const bodyParser = require("body-parser");
 const app = express();
 const port = 3007;
+
+app.use(bodyParser.json());
 
 // Endpoint Auth
 app.use("/auth", authRoutes);
