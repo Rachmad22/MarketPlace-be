@@ -11,7 +11,7 @@ const create = async (params) => {
 };
 
 const getUserByEmail = async (email) => {
-  return await db`SELECT id FROM users WHERE email=${email}`;
+  return await db`SELECT * FROM users WHERE email=${email}`;
 };
 
 module.exports = { create, getUserByEmail };

@@ -6,7 +6,6 @@ const validateRegister = async (req, res, next) => {
     name: "required|minLength:3",
     email: "required|email|maxLength:50",
     phone_number: "required|minLength:9",
-    // store_name: "required|minLength:8",
     password: "required|minLength:8",
   });
 

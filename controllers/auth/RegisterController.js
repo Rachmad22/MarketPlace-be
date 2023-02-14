@@ -15,16 +15,16 @@ const register = async (req, res) => {
     }
 
     // hash password
-    // const hash = await bcrypt.hash(password, saltRounds);
+    const hash = await bcrypt.hash(password, saltRounds);
 
-    // await users.create({
-    //   role,
-    //   name,
-    //   email,
-    //   phone_number,
-    //   store_name,
-    //   password: hash,
-    // });
+    await users.create({
+      role,
+      name,
+      email,
+      phone_number,
+      store_name,
+      password: hash,
+    });
 
     // return response
     res.status(201).json({
