@@ -1,4 +1,3 @@
-const db = require("../../database/index");
 const bcrypt = require("bcrypt");
 const users = require("../../models/users");
 
@@ -12,6 +11,11 @@ const register = async (req, res) => {
     const checkEmail = await users.getUserByEmail(email);
     if (checkEmail.length > 0) {
       throw { statusCode: 409, message: "Email is already registered!" };
+    }
+
+    // check store name for seller
+    if (role === 0 && store_name.length < 8) {
+      throw { statusCode: 402, message: "Store name min length 8 character!" };
     }
 
     // hash password

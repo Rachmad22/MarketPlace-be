@@ -64,12 +64,24 @@ const update = async (req, res) => {
       gender,
     } = req.body;
 
+    const saltRounds = 10;
+
     // get data users
     const getUser = await users.getUserById(id);
 
     // if id doesnt exist
     if (getUser.length < 1) {
       throw { statusCode: 400, message: "Data doesnt exist!" };
+    }
+
+    const regex1 = /[A-Z]/g;
+    const regex2 = /[0-9]/g;
+    const checkPassword = password.match(regex1) && password.match(regex2);
+    if (!checkPassword) {
+      throw {
+        statusCode: 400,
+        message: "Password must be contain at least one number and uppercase!",
+      };
     }
 
     // check email is already exist
@@ -80,11 +92,19 @@ const update = async (req, res) => {
       }
     }
 
+    // check store name for seller
+    if (role === 0 && store_name.length < 8) {
+      throw { statusCode: 402, message: "Store name min length 8 character!" };
+    }
+
+    let pass = "";
     if (password) {
       // hash password
       const hash = await bcrypt.hash(password, saltRounds);
       if (!hash) {
         throw { statusCode: 400, message: "Authentication is failed!" };
+      } else {
+        pass = hash;
       }
     }
 
@@ -136,7 +156,7 @@ const update = async (req, res) => {
       email: email ?? getUser[0].email,
       phone_number: phone_number ?? getUser[0].phone_number,
       store_name: store_name ?? getUser[0].store_name,
-      password: password ? hash : getUser[0].password,
+      password: password ? pass : getUser[0].password,
       role: role ?? getUser[0].role,
       photo: filename ?? getUser[0].photo,
       date_of_birth: date_of_birth ?? getUser[0].date_of_birth,
