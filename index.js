@@ -1,6 +1,7 @@
 const express = require("express");
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
+const categoryRoutes = require("./routes/category");
 const bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
 const cors = require("cors");
@@ -30,6 +31,9 @@ app.use("/auth", authRoutes);
 
 // Endpoint User
 app.use("/users", userRoutes);
+
+// Endpoint User
+app.use("/categories", categoryRoutes);
 
 app.use("/", (req, res) => {
   res.json({

@@ -2,7 +2,7 @@ require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const { Validator } = require("node-input-validator");
 
-const tokenValidate = async (req, res, next) => {
+const accessAuthValidate = async (req, res, next) => {
   try {
     // get token from header authorization
     const { authorization } = req.headers;
@@ -17,13 +17,6 @@ const tokenValidate = async (req, res, next) => {
             throw {
               statusCode: 401,
               message: "Token error, please try again!",
-            };
-          }
-
-          if (Date.now() >= decoded.exp * 1000) {
-            throw {
-              statusCode: 401,
-              message: "Token expired!",
             };
           }
 
@@ -80,4 +73,4 @@ const validateUpdate = async (req, res, next) => {
   });
 };
 
-module.exports = { validateUpdate, tokenValidate };
+module.exports = { validateUpdate, accessAuthValidate };
