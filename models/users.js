@@ -1,7 +1,7 @@
 const db = require("../database/index");
 
 const updatedAt = new Date();
-const createdAt = new Date();
+// const createdAt = new Date();
 
 const create = async (params) => {
   const { role, name, email, phone_number, store_name, password } = params;
