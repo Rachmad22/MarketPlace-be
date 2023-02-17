@@ -16,6 +16,7 @@ const getUserByEmail = async (email) => {
 
 const getUserById = async (id) => {
   return await db`SELECT * FROM users WHERE id=${id}`;
+  // return await db`Select users.*, addresses.* FROM users INNER JOIN addresses ON users.id=addresses.user_id WHERE users.id=${id}`;
 };
 
 const getAll = async () => {

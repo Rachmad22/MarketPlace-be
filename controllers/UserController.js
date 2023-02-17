@@ -1,4 +1,5 @@
 const users = require("../models/users");
+const addresses = require("../models/address");
 const bcrypt = require("bcrypt");
 const { checkSizeUpload, checkExtensionFile } = require("../utils/uploadFile");
 const { uploadCloudinary, deleteCloudinary } = require("../utils/cloudinary");
@@ -31,6 +32,9 @@ const getById = async (req, res) => {
     const { id } = req.params;
     const data = await users.getUserById(id);
 
+    // get data address
+    const address = await addresses.getAddressByUserId(id);
+
     if (data.length < 1) {
       throw { statusCode: 400, message: "Data doesnt exist!" };
     }
@@ -39,6 +43,7 @@ const getById = async (req, res) => {
       status: true,
       message: "Success",
       data: data,
+      address,
     });
   } catch (error) {
     res.status(error?.statusCode ?? 500).json({
