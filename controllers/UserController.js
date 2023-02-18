@@ -79,16 +79,6 @@ const update = async (req, res) => {
       throw { statusCode: 400, message: "Data doesnt exist!" };
     }
 
-    const regex1 = /[A-Z]/g;
-    const regex2 = /[0-9]/g;
-    const checkPassword = password.match(regex1) && password.match(regex2);
-    if (!checkPassword) {
-      throw {
-        statusCode: 400,
-        message: "Password must be contain at least one number and uppercase!",
-      };
-    }
-
     // check email is already exist
     if (email) {
       const checkEmail = await users.getUserByEmail({ email });
@@ -103,7 +93,18 @@ const update = async (req, res) => {
     }
 
     let pass = "";
-    if (password) {
+    if (password && password !== "") {
+      const regex1 = /[A-Z]/g;
+      const regex2 = /[0-9]/g;
+
+      const checkPassword = password.match(regex1) && password.match(regex2);
+      if (!checkPassword) {
+        throw {
+          statusCode: 400,
+          message:
+            "Password must be contain at least one number and uppercase!",
+        };
+      }
       // hash password
       const hash = await bcrypt.hash(password, saltRounds);
       if (!hash) {
@@ -165,7 +166,7 @@ const update = async (req, res) => {
           : phone_number,
       store_name:
         !store_name || store_name === "" ? getUser[0].store_name : store_name,
-      password: password || password !== "" ? pass : getUser[0].password,
+      password: !password || password === "" ? getUser[0].password : pass,
       role: !role || role === "" ? getUser[0].role : role,
       photo: filename ?? getUser[0].photo,
       date_of_birth:
