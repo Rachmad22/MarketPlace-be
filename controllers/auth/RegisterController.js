@@ -3,7 +3,7 @@ const users = require("../../models/users");
 
 const register = async (req, res) => {
   try {
-    //   role => 0 : "seller", 1 : "Buyer"
+    //   role => 0 : "seller", 1 : "Buyer/Customer"
     const { role, name, email, phone_number, store_name, password } = req.body;
     const saltRounds = 10;
 

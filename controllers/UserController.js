@@ -157,15 +157,22 @@ const update = async (req, res) => {
     // update data users
     const dataUpdate = await users.update({
       id,
-      name: name ?? getUser[0].name,
-      email: email ?? getUser[0].email,
-      phone_number: phone_number ?? getUser[0].phone_number,
-      store_name: store_name ?? getUser[0].store_name,
-      password: password ? pass : getUser[0].password,
-      role: role ?? getUser[0].role,
+      name: !name || name === "" ? getUser[0].name : name,
+      email: !email || email === "" ? getUser[0].email : email,
+      phone_number:
+        !phone_number || phone_number === ""
+          ? getUser[0].phone_number
+          : phone_number,
+      store_name:
+        !store_name || store_name === "" ? getUser[0].store_name : store_name,
+      password: password || password !== "" ? pass : getUser[0].password,
+      role: !role || role === "" ? getUser[0].role : role,
       photo: filename ?? getUser[0].photo,
-      date_of_birth: date_of_birth ?? getUser[0].date_of_birth,
-      gender: gender ?? getUser[0].gender,
+      date_of_birth:
+        !date_of_birth || date_of_birth === ""
+          ? getUser[0].date_of_birth
+          : date_of_birth,
+      gender: !gender || gender === "" ? getUser[0].gender : gender,
     });
 
     // return response
