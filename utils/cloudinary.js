@@ -15,7 +15,6 @@ const uploadCloudinary = async (file) => {
     file.tempFilePath,
     { public_id },
     function (error, result) {
-      console.log(result);
       if (error) {
         res = { success: false };
       } else {
@@ -34,8 +33,6 @@ const deleteCloudinary = async (url) => {
   const filename2 = urlSplited[urlSplited.length - 2];
   const public_id = filename.split(".")[0];
   await cloudinary.v2.uploader.destroy(public_id, (error, result) => {
-    console.log("error:", error);
-    console.log("result:", result);
     if (error) {
       res = { success: false };
     } else {
