@@ -62,12 +62,24 @@ const getProductsById = async (req, res) => {
     //get data user/store
     const dataStore = await users.getUserById(data?.[0]?.user_id);
 
+    // get data category
+    const dataCategory = await categories.getCategoryById(
+      data?.[0]?.category_id
+    );
+
+    // get data category
+    const dataProductImages = await productImages.getProductImagesByProductId(
+      data?.[0]?.id
+    );
+
     res.status(200).json({
       status: true,
       message: "Success",
       data: {
         product: data,
         store: dataStore,
+        category: dataCategory,
+        productImages: dataProductImages,
       },
     });
   } catch (error) {
