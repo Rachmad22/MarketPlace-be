@@ -3,7 +3,7 @@ const users = require("../../models/users");
 
 const register = async (req, res) => {
   try {
-    //   role => 0 : "seller", 1 : "Buyer"
+    //   role => 0 : "seller", 1 : "Buyer/Customer"
     const { role, name, email, phone_number, store_name, password } = req.body;
     const saltRounds = 10;
 
@@ -14,7 +14,7 @@ const register = async (req, res) => {
     }
 
     // check store name for seller
-    if (role === 0 && store_name.length < 8) {
+    if (role === false && store_name.length < 8) {
       throw { statusCode: 402, message: "Store name min length 8 character!" };
     }
 

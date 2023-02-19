@@ -3,6 +3,7 @@ const addresses = require("../models/address");
 const bcrypt = require("bcrypt");
 const { checkSizeUpload, checkExtensionFile } = require("../utils/uploadFile");
 const { uploadCloudinary, deleteCloudinary } = require("../utils/cloudinary");
+const convertData = require("../utils/convertData");
 
 const getAll = async (req, res) => {
   try {
@@ -79,16 +80,6 @@ const update = async (req, res) => {
       throw { statusCode: 400, message: "Data doesnt exist!" };
     }
 
-    const regex1 = /[A-Z]/g;
-    const regex2 = /[0-9]/g;
-    const checkPassword = password.match(regex1) && password.match(regex2);
-    if (!checkPassword) {
-      throw {
-        statusCode: 400,
-        message: "Password must be contain at least one number and uppercase!",
-      };
-    }
-
     // check email is already exist
     if (email) {
       const checkEmail = await users.getUserByEmail({ email });
@@ -103,7 +94,18 @@ const update = async (req, res) => {
     }
 
     let pass = "";
-    if (password) {
+    if (password && password !== "") {
+      const regex1 = /[A-Z]/g;
+      const regex2 = /[0-9]/g;
+
+      const checkPassword = password.match(regex1) && password.match(regex2);
+      if (!checkPassword) {
+        throw {
+          statusCode: 400,
+          message:
+            "Password must be contain at least one number and uppercase!",
+        };
+      }
       // hash password
       const hash = await bcrypt.hash(password, saltRounds);
       if (!hash) {
@@ -154,18 +156,35 @@ const update = async (req, res) => {
       }
     }
 
+    // convert string to bool
+    let newGender = true;
+    if (typeof gender === "string") {
+      gender === ""
+        ? (newGender = getUser[0].gender)
+        : (newGender = newGender = convertData.strToBool(gender));
+    } else {
+      newGender = gender;
+    }
+
     // update data users
     const dataUpdate = await users.update({
       id,
-      name: name ?? getUser[0].name,
-      email: email ?? getUser[0].email,
-      phone_number: phone_number ?? getUser[0].phone_number,
-      store_name: store_name ?? getUser[0].store_name,
-      password: password ? pass : getUser[0].password,
-      role: role ?? getUser[0].role,
+      name: !name || name === "" ? getUser[0].name : name,
+      email: !email || email === "" ? getUser[0].email : email,
+      phone_number:
+        !phone_number || phone_number === ""
+          ? getUser[0].phone_number
+          : phone_number,
+      store_name:
+        !store_name || store_name === "" ? getUser[0].store_name : store_name,
+      password: !password || password === "" ? getUser[0].password : pass,
+      role: !role || role === "" ? getUser[0].role : role,
       photo: filename ?? getUser[0].photo,
-      date_of_birth: date_of_birth ?? getUser[0].date_of_birth,
-      gender: gender ?? getUser[0].gender,
+      date_of_birth:
+        !date_of_birth || date_of_birth === ""
+          ? getUser[0].date_of_birth
+          : date_of_birth,
+      gender: gender ? newGender : getUser[0].gender,
     });
 
     // return response
