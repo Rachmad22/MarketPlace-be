@@ -3,7 +3,7 @@ const db = require("../database/index");
 const updatedAt = new Date();
 
 const getAll = async () => {
-  return await db`SELECT * FROM products`;
+  return await db`SELECT products.*, product_images.* FROM products LEFT JOIN product_images ON products.id=product_images.product_id`;
 };
 
 const getProductsById = async (id) => {
