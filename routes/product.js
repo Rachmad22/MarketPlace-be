@@ -1,20 +1,22 @@
 const router = require("express").Router();
-const {
-  getAddressById,
-  getAddressByUserId,
-} = require("../controllers/AddressController");
+
 const {
   getAll,
   getProductsById,
   getProductsByUserId,
+  search,
+  create,
 } = require("../controllers/ProductController");
+const { validateCreate } = require("../middlewares/product/productValidation");
 const {
   tokenValidate,
   //   accessAuthValidate,
 } = require("../middlewares/tokenValidation");
 
 router.get("/", getAll);
-router.get("/:id", tokenValidate, getProductsById);
-router.get("/users/:userId", tokenValidate, getProductsByUserId);
+router.get("/:id", getProductsById);
+router.get("/users/:userId", getProductsByUserId);
+router.get("/search/data", search);
+router.post("/", tokenValidate, validateCreate, create);
 
 module.exports = router;
