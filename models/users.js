@@ -36,6 +36,7 @@ const update = async (params) => {
     gender,
     photo,
   } = params;
+
   return await db`UPDATE users SET "name"= ${name}, "email"= ${email}, "phone_number"= ${phone_number}, "store_name"= ${store_name}, "password"= ${password}, "role"= ${role}, "photo"= ${photo}, "date_of_birth"= ${date_of_birth}, "gender"= ${gender}, "updated_at"= ${updatedAt} WHERE id=${id} RETURNING *`;
 };
 

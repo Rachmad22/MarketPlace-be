@@ -3,6 +3,7 @@ const addresses = require("../models/address");
 const bcrypt = require("bcrypt");
 const { checkSizeUpload, checkExtensionFile } = require("../utils/uploadFile");
 const { uploadCloudinary, deleteCloudinary } = require("../utils/cloudinary");
+const convertData = require("../utils/convertData");
 
 const getAll = async (req, res) => {
   try {
@@ -155,6 +156,16 @@ const update = async (req, res) => {
       }
     }
 
+    // convert string to bool
+    let newGender = true;
+    if (typeof gender === "string") {
+      gender === ""
+        ? (newGender = getUser[0].gender)
+        : (newGender = newGender = convertData.strToBool(gender));
+    } else {
+      newGender = gender;
+    }
+
     // update data users
     const dataUpdate = await users.update({
       id,
@@ -173,7 +184,7 @@ const update = async (req, res) => {
         !date_of_birth || date_of_birth === ""
           ? getUser[0].date_of_birth
           : date_of_birth,
-      gender: !gender || gender === "" ? getUser[0].gender : gender,
+      gender: gender ? newGender : getUser[0].gender,
     });
 
     // return response

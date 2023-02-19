@@ -14,7 +14,7 @@ const register = async (req, res) => {
     }
 
     // check store name for seller
-    if (role === 0 && store_name.length < 8) {
+    if (role === false && store_name.length < 8) {
       throw { statusCode: 402, message: "Store name min length 8 character!" };
     }
 
