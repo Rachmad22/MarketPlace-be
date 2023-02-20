@@ -20,12 +20,12 @@ const tokenValidate = async (req, res, next) => {
             };
           }
 
-          if (Date.now() >= decoded.exp * 1000) {
-            throw {
-              statusCode: 401,
-              message: "Token expired!",
-            };
-          }
+          // if (Date.now() >= decoded.exp * 1000) {
+          //   throw {
+          //     statusCode: 401,
+          //     message: "Token expired!",
+          //   };
+          // }
 
           next();
         }
