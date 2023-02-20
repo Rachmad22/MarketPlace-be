@@ -6,6 +6,7 @@ const {
   getProductsByUserId,
   search,
   create,
+  getProductsByCategoryId,
 } = require("../controllers/ProductController");
 const { validateCreate } = require("../middlewares/product/productValidation");
 const {
@@ -16,6 +17,7 @@ const {
 router.get("/", getAll);
 router.get("/:id", getProductsById);
 router.get("/users/:userId", getProductsByUserId);
+router.get("/category/:categoryId", getProductsByCategoryId);
 router.get("/search/data", search);
 router.post("/", tokenValidate, validateCreate, create);
 

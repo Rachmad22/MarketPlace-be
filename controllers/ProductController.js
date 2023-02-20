@@ -50,6 +50,29 @@ const getProductsByUserId = async (req, res) => {
   }
 };
 
+const getProductsByCategoryId = async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+    const data = await products.getProductByCategoryId(categoryId);
+
+    if (data.length < 1) {
+      throw { statusCode: 400, message: "Data doesnt exist!" };
+    }
+
+    res.status(200).json({
+      status: true,
+      message: "Success",
+      data: data,
+    });
+  } catch (error) {
+    res.status(error?.statusCode ?? 500).json({
+      status: false,
+      message: error?.message ?? error,
+      data: [],
+    });
+  }
+};
+
 const getProductsById = async (req, res) => {
   try {
     const { authorization } = req.headers;
@@ -199,4 +222,5 @@ module.exports = {
   getProductsById,
   search,
   create,
+  getProductsByCategoryId,
 };
