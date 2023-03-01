@@ -9,7 +9,12 @@ const getAll = async (req, res) => {
   try {
     const data = await products.getAll();
     if (data?.length < 1) {
-      throw { statusCode: 400, message: "Data doesnt exist!" };
+      res.status(200).json({
+        status: true,
+        message: "Data doesnt exist!",
+        total: 0,
+        data: [],
+      });
     }
 
     res.status(200).json({
@@ -33,7 +38,12 @@ const getProductsByUserId = async (req, res) => {
     const data = await products.getProductsByUserId(userId);
 
     if (data.length < 1) {
-      throw { statusCode: 400, message: "Data doesnt exist!" };
+      res.status(200).json({
+        status: true,
+        message: "Data doesnt exist!",
+        total: 0,
+        data: [],
+      });
     }
 
     res.status(200).json({
@@ -56,14 +66,19 @@ const getProductsByCategoryId = async (req, res) => {
     const data = await products.getProductByCategoryId(categoryId);
 
     if (data.length < 1) {
-      throw { statusCode: 400, message: "Data doesnt exist!" };
+      res.status(200).json({
+        status: true,
+        message: "Data doesnt exist!",
+        total: 0,
+        data: [],
+      });
+    } else {
+      res.status(200).json({
+        status: true,
+        message: "Success",
+        data: data,
+      });
     }
-
-    res.status(200).json({
-      status: true,
-      message: "Success",
-      data: data,
-    });
   } catch (error) {
     res.status(error?.statusCode ?? 500).json({
       status: false,
@@ -80,7 +95,12 @@ const getProductsById = async (req, res) => {
     const data = await products.getProductsById(id);
 
     if (data.length < 1)
-      throw { statusCode: 400, message: "Data doesnt exist!" };
+      res.status(200).json({
+        status: true,
+        message: "Data doesnt exist!",
+        total: 0,
+        data: [],
+      });
 
     //get data user/store
     const dataStore = await users.getUserById(data?.[0]?.user_id);
