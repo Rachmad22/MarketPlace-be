@@ -6,15 +6,20 @@ const getAll = async (req, res) => {
   try {
     const data = await categories.getAll();
     if (data?.length < 1) {
-      throw { statusCode: 400, message: "Data doesnt exist!" };
+      res.status(200).json({
+        status: true,
+        message: "Data doesnt exist!",
+        total: 0,
+        data: [],
+      });
+    } else {
+      res.status(200).json({
+        status: true,
+        message: "Success",
+        total: data?.length,
+        data: data,
+      });
     }
-
-    res.status(200).json({
-      status: true,
-      message: "Success",
-      total: data?.length,
-      data: data,
-    });
   } catch (error) {
     res.status(error?.statusCode ?? 500).json({
       status: false,
@@ -31,14 +36,19 @@ const getById = async (req, res) => {
     const data = await categories.getCategoryById(id);
 
     if (data.length < 1) {
-      throw { statusCode: 400, message: "Data doesnt exist!" };
+      res.status(200).json({
+        status: true,
+        message: "Data doesnt exist!",
+        total: 0,
+        data: [],
+      });
+    } else {
+      res.status(200).json({
+        status: true,
+        message: "Success",
+        data: data,
+      });
     }
-
-    res.status(200).json({
-      status: true,
-      message: "Success",
-      data: data,
-    });
   } catch (error) {
     res.status(error?.statusCode ?? 500).json({
       status: false,
