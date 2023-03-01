@@ -63,6 +63,7 @@ const getProductsByUserId = async (req, res) => {
 const getProductsByCategoryId = async (req, res) => {
   try {
     const { categoryId } = req.params;
+    const category = await categories.getCategoryById(categoryId);
     const data = await products.getProductByCategoryId(categoryId);
 
     if (data.length < 1) {
@@ -71,6 +72,7 @@ const getProductsByCategoryId = async (req, res) => {
         message: "Data doesnt exist!",
         total: 0,
         data: [],
+        category_name: category?.[0]?.category_name ?? "Unknown",
       });
     } else {
       res.status(200).json({
