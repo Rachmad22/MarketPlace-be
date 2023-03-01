@@ -9,7 +9,12 @@ const getAll = async (req, res) => {
   try {
     const data = await products.getAll();
     if (data?.length < 1) {
-      throw { statusCode: 400, message: "Data doesnt exist!" };
+      res.status(200).json({
+        status: true,
+        message: "Data doesnt exist!",
+        total: 0,
+        data: [],
+      });
     }
 
     res.status(200).json({
@@ -33,7 +38,12 @@ const getProductsByUserId = async (req, res) => {
     const data = await products.getProductsByUserId(userId);
 
     if (data.length < 1) {
-      throw { statusCode: 400, message: "Data doesnt exist!" };
+      res.status(200).json({
+        status: true,
+        message: "Data doesnt exist!",
+        total: 0,
+        data: [],
+      });
     }
 
     res.status(200).json({
@@ -56,14 +66,19 @@ const getProductsByCategoryId = async (req, res) => {
     const data = await products.getProductByCategoryId(categoryId);
 
     if (data.length < 1) {
-      throw { statusCode: 400, message: "Data doesnt exist!" };
+      res.status(200).json({
+        status: true,
+        message: "Data doesnt exist!",
+        total: 0,
+        data: [],
+      });
+    } else {
+      res.status(200).json({
+        status: true,
+        message: "Success",
+        data: data,
+      });
     }
-
-    res.status(200).json({
-      status: true,
-      message: "Success",
-      data: data,
-    });
   } catch (error) {
     res.status(error?.statusCode ?? 500).json({
       status: false,
@@ -80,7 +95,12 @@ const getProductsById = async (req, res) => {
     const data = await products.getProductsById(id);
 
     if (data.length < 1)
-      throw { statusCode: 400, message: "Data doesnt exist!" };
+      res.status(200).json({
+        status: true,
+        message: "Data doesnt exist!",
+        total: 0,
+        data: [],
+      });
 
     //get data user/store
     const dataStore = await users.getUserById(data?.[0]?.user_id);
@@ -116,12 +136,13 @@ const getProductsById = async (req, res) => {
 
 const search = async (req, res) => {
   try {
-    const { keyword, page, limit } = req.query; // ?keyword=&page=&limit= query params pagination
+    const { keyword, page, limit, sort } = req.query; // ?keyword=&page=&limit= query params pagination
 
     const getData = await products.search({
       keyword,
       page,
       limit,
+      sort: sort ?? "DESC",
     });
 
     totalData = getData.length;
@@ -174,6 +195,11 @@ const create = async (req, res) => {
     if (checkUser.length < 1)
       throw { statusCode: 400, message: "User not found!" };
 
+    // console.log(checkUser[0].role);
+    if (checkUser[0].role !== false) {
+      throw { statusCode: 401, message: "Only seller can create product!" };
+    }
+
     const checkCategory = await categories.getCategoryById(category_id);
     if (checkCategory.length < 1)
       throw { statusCode: 400, message: "Category not found!" };
@@ -192,13 +218,15 @@ const create = async (req, res) => {
     });
 
     // create product images
-    const newProductImages = product_images.map((item) => {
-      return {
-        product_id: createData?.[0]?.id,
-        image: item,
-      };
-    });
-    await productImages.create({ product_images: newProductImages });
+    if (product_images) {
+      const newProductImages = product_images.map((item) => {
+        return {
+          product_id: createData?.[0]?.id,
+          image: item,
+        };
+      });
+      await productImages.create({ product_images: newProductImages });
+    }
 
     // createData[0].size.split(",").map((item) => console.log(item));
 
