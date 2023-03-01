@@ -20,7 +20,7 @@ const getProductByCategoryId = async (category_id) => {
 };
 
 const search = async (params) => {
-  const { keyword, limit, page } = params;
+  const { keyword, limit, page, sort } = params;
   return await db`SELECT products.*, categories.id as category_id, categories.category_name as category_name,  users.store_name as store_name FROM products LEFT JOIN users ON products.user_id=users.id LEFT JOIN categories ON products.category_id=categories.id WHERE products.product_name ILIKE ${
     "%" + keyword + "%"
   } ORDER BY products.id DESC LIMIT ${limit ?? null} OFFSET ${
