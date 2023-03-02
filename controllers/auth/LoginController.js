@@ -21,9 +21,7 @@ const login = async (req, res) => {
     // delete password
     delete getUsers[0].password;
 
-    var token = jwt.sign({ data: getUsers[0] }, process.env.JWT_KEY, {
-      expiresIn: "1h",
-    });
+    var token = jwt.sign({ data: getUsers[0] }, process.env.JWT_KEY);
 
     res.status(200).json({
       status: true,
