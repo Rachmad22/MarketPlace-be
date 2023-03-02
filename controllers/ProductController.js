@@ -79,6 +79,7 @@ const getProductsByCategoryId = async (req, res) => {
         status: true,
         message: "Success",
         data: data,
+        category_name: category?.[0]?.category_name ?? "Unknown",
       });
     }
   } catch (error) {

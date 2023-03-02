@@ -5,6 +5,7 @@ const categoryRoutes = require("./routes/category");
 const addressRoutes = require("./routes/address");
 const productRoutes = require("./routes/product");
 const orderRoutes = require("./routes/order");
+const paymentRoutes = require("./routes/payment");
 const bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
 const cors = require("cors");
@@ -46,6 +47,9 @@ app.use("/products", productRoutes);
 
 // Endpoint Order
 app.use("/Orders", orderRoutes);
+
+// Endpoint Payment
+app.use("/payments", paymentRoutes);
 
 app.use("/", (req, res) => {
   res.json({

@@ -18,7 +18,7 @@ const getCategoryByName = async (keyword) => {
 };
 
 const getAll = async () => {
-  return await db`SELECT * FROM categories`;
+  return await db`SELECT * FROM categories ORDER BY category_name ASC`;
 };
 
 const update = async ({
