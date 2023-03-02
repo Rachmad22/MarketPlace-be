@@ -13,9 +13,9 @@ FROM payments`;
 const getPaymentByUserId = async (userId) => {
   return await db`SELECT payments.*, 
     (
-      SELECT COALESCE(json_agg(row_to_json(checkouts.*, (SELECT COALESCE(json_agg(row_to_json(products.*)), '[]'::json) FROM products WHERE checkouts.product_id = products.id) as robbots)), '[]'::json)
-      FROM checkouts 
-      WHERE payments.id = checkouts.payment_id
+      SELECT COALESCE(json_agg(row_to_json(checkouts.*)), '[]'::json)
+        FROM checkouts 
+        WHERE payments.id = checkouts.payment_id
     ) as checkouts
   FROM payments
   WHERE payments.user_id=${userId}

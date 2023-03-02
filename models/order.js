@@ -12,7 +12,11 @@ const getOrderById = async (id) => {
 };
 
 const getOrderByUserId = async (user_id) => {
-  return await db`SELECT * FROM orders WHERE user_id=${user_id}`;
+  return await db`SELECT orders.*, orders.id as orders_id, products.*, products.id as product_id, categories.*, categories.id as category_id 
+  FROM orders LEFT JOIN products ON products.id = orders.product_id
+  JOIN categories ON categories.id = products.category_id
+  WHERE orders.user_id=${user_id} 
+  ORDER BY orders.created_at DESC`;
 };
 
 const destroy = async (params) => {
