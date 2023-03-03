@@ -2,6 +2,7 @@ const {
   create,
   destroy,
   getOrderByUserId,
+  updateQty,
 } = require("../controllers/OrderController");
 
 const {
@@ -18,6 +19,7 @@ router.get(
   getOrderByUserId
 );
 router.post("/", tokenValidate, create);
+router.post("/qty/:id/:type", tokenValidate, updateQty);
 router.delete("/delete/:id", tokenValidate, destroy);
 
 module.exports = router;

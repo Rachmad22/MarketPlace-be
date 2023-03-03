@@ -1,4 +1,5 @@
 const payments = require("../models/payment");
+const users = require("../models/users");
 const { decodeJwtToken } = require("../utils/jwtToken");
 
 const getByUserId = async (req, res) => {
@@ -29,7 +30,6 @@ const create = async (req, res) => {
       cost,
       shipping_cost,
       status,
-      no_transaction,
       item_checkouts = [],
     } = req.body;
     const { authorization } = req.headers;
@@ -42,6 +42,15 @@ const create = async (req, res) => {
     const checkUser = await users.getUserById(user_id);
     if (checkUser.length < 1)
       throw { statusCode: 400, message: "User not found!" };
+    const no_transaction =
+      new Date().getTime() +
+      "" +
+      new Date().getFullYear() +
+      "" +
+      new Date().getMonth() +
+      "" +
+      new Date().getDate() +
+      checkUser?.[0].id;
 
     // create payment
     const createPayment = await payments.create({
@@ -58,7 +67,7 @@ const create = async (req, res) => {
     res.status(201).json({
       status: true,
       message: "Data is successfully created!",
-      data: createData,
+      // data: createData,
     });
   } catch (error) {
     console.log(error);

@@ -35,7 +35,7 @@ const create = async (params) => {
   } = params;
 
   if (item_checkouts?.length > 0) {
-    await db`INSERT INTO product_images ${db(
+    await db`INSERT INTO checkouts ${db(
       item_checkouts,
       "payment_id",
       "product_id",
