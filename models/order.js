@@ -1,5 +1,5 @@
 const db = require("../database/index");
-// const updatedAt = new Date();
+const updatedAt = new Date();
 
 const create = async (params) => {
   const { product_id, qty, size, user_id, total_stock } = params;
@@ -36,10 +36,18 @@ const getOrderByUserId = async (user_id) => {
   ORDER BY orders.created_at DESC`;
 };
 
+const updateQty = async (params) => {
+  const { stock_product, qty, product_id, order_id } = params;
+  // change product stock
+  await db`UPDATE products SET "stock"= ${stock_product}, "updated_at"= ${updatedAt} WHERE id=${product_id} RETURNING *`;
+  // change data order
+  return await db`UPDATE orders SET "qty"= ${qty}, "updated_at"= ${updatedAt} WHERE id=${order_id} RETURNING *`;
+};
+
 const destroy = async (params) => {
   const { id, product_id, total_stock } = params;
   await db`UPDATE products SET "stock"= ${total_stock} WHERE id=${product_id}`;
   return await db`DELETE FROM orders WHERE id=${id}`;
 };
 
-module.exports = { create, getOrderById, destroy, getOrderByUserId };
+module.exports = { create, getOrderById, destroy, getOrderByUserId, updateQty };
