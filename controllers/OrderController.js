@@ -80,7 +80,54 @@ const create = async (req, res) => {
       data: createData,
     });
   } catch (error) {
-    console.log(error);
+    res.status(error?.statusCode ?? 500).json({
+      status: false,
+      message: error?.message ?? error,
+    });
+  }
+};
+
+const updateQty = async (req, res) => {
+  try {
+    const { id, type } = req.params;
+    const { qty } = req.body;
+    const data = await orders.getOrderById(id);
+    let stock_product = 0;
+
+    if (data.length < 1) {
+      throw { statusCode: 400, message: "Data doesnt exist!" };
+    } else {
+      //get product by product_id
+      const product = await products.getProductsById(data?.[0]?.product_id);
+
+      // change qty product in products table
+      if (type === "up") {
+        // decrease stock product
+        stock_product = parseInt(product?.[0]?.stock) - parseInt(qty);
+      } else if (type === "down") {
+        // increase stock product
+        stock_product = parseInt(product?.[0]?.stock) + parseInt(qty);
+      } else {
+        throw { statusCode: 400, message: "type only up or down" };
+      }
+
+      const postData = {
+        stock_product,
+        qty,
+        product_id: data?.[0]?.product_id,
+        order_id: id,
+      };
+
+      const dataUpdate = await orders.updateQty(postData);
+
+      // return response
+      res.status(200).json({
+        status: true,
+        message: "Data is successfully updated!",
+        data: dataUpdate,
+      });
+    }
+  } catch (error) {
     res.status(error?.statusCode ?? 500).json({
       status: false,
       message: error?.message ?? error,
@@ -124,4 +171,5 @@ module.exports = {
   create,
   destroy,
   getOrderByUserId,
+  updateQty,
 };
