@@ -3,8 +3,17 @@ const updatedAt = new Date();
 
 const create = async (params) => {
   const { product_id, qty, size, user_id, total_stock } = params;
-  await db`UPDATE products SET "stock"= ${total_stock} WHERE id=${product_id}`;
-  return await db`INSERT INTO orders (product_id, qty, size, user_id) VALUES(${product_id}, ${qty}, ${size}, ${user_id}) RETURNING *`;
+  const checkOrder =
+    await db`SELECT * FROM orders WHERE user_id=${user_id} AND product_id=${product_id}`;
+
+  if (checkOrder.length > 0) {
+    return await db`UPDATE orders SET "qty"=${
+      checkOrder[0].qty + qty
+    } WHERE user_id=${user_id} AND product_id=${product_id} RETURNING *`;
+  } else {
+    await db`UPDATE products SET "stock"= ${total_stock} WHERE id=${product_id}`;
+    return await db`INSERT INTO orders (product_id, qty, size, user_id) VALUES(${product_id}, ${qty}, ${size}, ${user_id}) RETURNING *`;
+  }
 };
 
 const getOrderById = async (id) => {
