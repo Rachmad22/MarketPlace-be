@@ -103,10 +103,24 @@ const updateQty = async (req, res) => {
       // change qty product in products table
       if (type === "up") {
         // decrease stock product
-        stock_product = parseInt(product?.[0]?.stock) - parseInt(qty);
+        if (data?.[0].qty > qty) {
+          throw {
+            statusCode: 400,
+            message: "Quantity must be more than order before",
+          };
+        } else {
+          stock_product = parseInt(product?.[0]?.stock) - parseInt(qty);
+        }
       } else if (type === "down") {
         // increase stock product
-        stock_product = parseInt(product?.[0]?.stock) + parseInt(qty);
+        if (data?.[0].qty < qty) {
+          throw {
+            statusCode: 400,
+            message: "Quantity must be less than order before",
+          };
+        } else {
+          stock_product = parseInt(product?.[0]?.stock) + parseInt(qty);
+        }
       } else {
         throw { statusCode: 400, message: "type only up or down" };
       }

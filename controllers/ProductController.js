@@ -2,6 +2,7 @@ const products = require("../models/product");
 const users = require("../models/users");
 const categories = require("../models/category");
 const productImages = require("../models/productImage");
+const convertData = require("../utils/convertData");
 
 const { decodeJwtToken } = require("../utils/jwtToken");
 
@@ -15,14 +16,14 @@ const getAll = async (req, res) => {
         total: 0,
         data: [],
       });
+    } else {
+      res.status(200).json({
+        status: true,
+        message: "Success",
+        total: data?.length,
+        data: data,
+      });
     }
-
-    res.status(200).json({
-      status: true,
-      message: "Success",
-      total: data?.length,
-      data: data,
-    });
   } catch (error) {
     res.status(error?.statusCode ?? 500).json({
       status: false,
@@ -198,7 +199,6 @@ const create = async (req, res) => {
     if (checkUser.length < 1)
       throw { statusCode: 400, message: "User not found!" };
 
-    // console.log(checkUser[0].role);
     if (checkUser[0].role !== false) {
       throw { statusCode: 401, message: "Only seller can create product!" };
     }
@@ -207,14 +207,22 @@ const create = async (req, res) => {
     if (checkCategory.length < 1)
       throw { statusCode: 400, message: "Category not found!" };
 
-    // // create product
+    // convert if condition string to bool
+    let newCondition = true;
+    if (typeof condition === "string") {
+      newCondition = convertData.strToBool(condition);
+    } else {
+      newCondition = condition;
+    }
+
+    // create product
     const createData = await products.create({
       user_id,
       category_id,
       category_gender,
       product_name,
       price,
-      condition,
+      condition: newCondition,
       description,
       stock,
       size,
@@ -230,8 +238,6 @@ const create = async (req, res) => {
       });
       await productImages.create({ product_images: newProductImages });
     }
-
-    // createData[0].size.split(",").map((item) => console.log(item));
 
     res.status(201).json({
       status: true,
