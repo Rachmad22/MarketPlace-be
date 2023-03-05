@@ -161,7 +161,7 @@ const update = async (req, res) => {
     if (typeof gender === "string") {
       gender === ""
         ? (newGender = getUser[0].gender)
-        : (newGender = newGender = convertData.strToBool(gender));
+        : (newGender = convertData.strToBool(gender));
     } else {
       newGender = gender;
     }

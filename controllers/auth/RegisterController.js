@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const users = require("../../models/users");
+const convertData = require("../../utils/convertData");
 
 const register = async (req, res) => {
   try {
@@ -14,15 +15,23 @@ const register = async (req, res) => {
     }
 
     // check store name for seller
-    if (role === false && store_name.length < 8) {
+    if ((role === false || role === "false") && store_name.length < 8) {
       throw { statusCode: 402, message: "Store name min length 8 character!" };
+    }
+
+    // convert string to bool
+    let newRole = true;
+    if (typeof role === "string") {
+      newRole = convertData.strToBool(gender);
+    } else {
+      newRole = role;
     }
 
     // hash password
     const hash = await bcrypt.hash(password, saltRounds);
 
     await users.create({
-      role,
+      role: newRole,
       name,
       email,
       phone_number,
