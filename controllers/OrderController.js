@@ -181,9 +181,45 @@ const destroy = async (req, res) => {
   }
 };
 
+// delete by user id
+const destroyByUserId = async (req, res) => {
+  try {
+    const { UserId } = req.params;
+
+    const data = await orders.getOrderByUserId(UserId);
+
+    if (data.length < 1) {
+      throw { statusCode: 400, message: "Data doesnt exist!" };
+    } else {
+      data.map(async (item) => {
+        const product = await products.getProductsById(item?.product_id);
+        // delete data from database
+
+        await orders.destroy({
+          id: item?.id,
+          product_id: item?.product_id,
+          total_stock: parseInt(item?.qty) + parseInt(product?.stock),
+        });
+      });
+    }
+
+    // return response
+    res.status(200).json({
+      status: true,
+      message: "Data successfully deleted!",
+    });
+  } catch (error) {
+    res.status(error?.statusCode ?? 500).json({
+      status: false,
+      message: error?.message ?? error,
+    });
+  }
+};
+
 module.exports = {
   create,
   destroy,
   getOrderByUserId,
   updateQty,
+  destroyByUserId,
 };
