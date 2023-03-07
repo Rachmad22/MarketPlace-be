@@ -236,6 +236,7 @@ const create = async (req, res) => {
           image: item,
         };
       });
+
       await productImages.create({ product_images: newProductImages });
     }
 
@@ -253,6 +254,101 @@ const create = async (req, res) => {
   }
 };
 
+const update = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      category_id,
+      category_gender,
+      product_name,
+      price,
+      condition,
+      description,
+      stock,
+      size = "S,M,L,XL,XXL",
+      product_images,
+    } = req.body;
+
+    const { authorization } = req.headers;
+    const decodedToken = await decodeJwtToken(authorization);
+    if (!decodedToken) throw { statusCode: 400, message: "Token Error!" };
+    const user_id = decodedToken?.data?.id;
+
+    const checkUser = await users.getUserById(user_id);
+    if (checkUser.length < 1)
+      throw { statusCode: 400, message: "User not found!" };
+
+    const checkProduct = await products.getProductsById(id);
+    if (checkProduct.length < 1)
+      throw { statusCode: 400, message: "Product not found!" };
+
+    // convert if condition string to bool
+    let newCondition = true;
+    if (typeof condition === "string") {
+      newCondition = convertData.strToBool(condition);
+    } else {
+      newCondition = condition;
+    }
+
+    // create product images
+    if (product_images) {
+      const newProductImages = await product_images.map(async (item) => {
+        // deklarasi file image
+        let file = req.files?.photo;
+        let filename = null;
+
+        // if file upload exist
+        if (file) {
+          // check size file upload
+          const checkSize = checkSizeUpload(file);
+          if (!checkSize) {
+            throw {
+              statusCode: 400,
+              message: "File upload is too large! only support < 1 MB",
+            };
+          }
+
+          // check type extension file upload
+          const allowedFile = checkExtensionFile(file);
+          if (!allowedFile) {
+            throw {
+              statusCode: 400,
+              message: `File is not support! format file must be image`,
+            };
+          }
+
+          // upload file
+          const uploadFile = await uploadCloudinary(file);
+          if (!uploadFile.success) {
+            throw { statusCode: 400, message: "Upload file error!" };
+          } else {
+            filename = uploadFile.urlUpload;
+          }
+
+          // delete old file
+          if (getUser[0].photo) {
+            const deleteFile = await deleteCloudinary(getUser[0].photo);
+            if (!deleteFile.success) {
+              throw { statusCode: 400, message: "Delete old file error!" };
+            }
+          }
+        }
+
+        return {
+          product_id: id,
+          image: item,
+        };
+      });
+
+      //delete old images
+      await productImages.destroyByProductId(id);
+
+      // add new images
+      await productImages.create({ product_images: newProductImages });
+    }
+  } catch (error) {}
+};
+
 module.exports = {
   getAll,
   getProductsByUserId,
@@ -260,4 +356,5 @@ module.exports = {
   search,
   create,
   getProductsByCategoryId,
+  update,
 };
