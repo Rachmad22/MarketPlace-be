@@ -7,7 +7,7 @@ const validateCreate = async (req, res, next) => {
     cost: "required|integer|between:1,99999999999",
     shipping_cost: "required|integer|between:1,99999999999",
     status: "required|integer",
-    item_checkouts: "required|array",
+    item_checkouts: "array",
   });
 
   rules.check().then((matched) => {
