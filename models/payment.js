@@ -34,9 +34,26 @@ const create = async (params) => {
     item_checkouts = [],
   } = params;
 
+  const data = await db`INSERT INTO payments (type_payment,
+    address_id,
+    cost,
+    shipping_cost,
+    status,
+    no_transaction,
+    user_id) VALUES(${type_payment}, ${address_id}, ${cost}, ${shipping_cost}, ${status}, ${no_transaction}, ${user_id}) RETURNING *`;
+
+  const newItemCheckout = item_checkouts.map((item) => {
+    return {
+      payment_id: data?.[0].id,
+      product_id: item?.product_id,
+      qty: item?.qty,
+      price: item?.price,
+    };
+  });
+
   if (item_checkouts?.length > 0) {
     await db`INSERT INTO checkouts ${db(
-      item_checkouts,
+      newItemCheckout,
       "payment_id",
       "product_id",
       "qty",
@@ -44,13 +61,7 @@ const create = async (params) => {
     )}`;
   }
 
-  return await db`INSERT INTO payments (type_payment,
-    address_id,
-    cost,
-    shipping_cost,
-    status,
-    no_transaction,
-    user_id) VALUES(${type_payment}, ${address_id}, ${cost}, ${shipping_cost}, ${status}, ${no_transaction}, ${user_id}) RETURNING *`;
+  return data;
 };
 
 module.exports = { getAll, create, getPaymentByUserId };

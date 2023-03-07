@@ -32,6 +32,7 @@ const create = async (req, res) => {
       status,
       item_checkouts = [],
     } = req.body;
+
     const { authorization } = req.headers;
 
     const decodedToken = await decodeJwtToken(authorization);
