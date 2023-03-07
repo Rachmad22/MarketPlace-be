@@ -99,5 +99,4 @@ module.exports = {
   search,
   create,
   getProductByCategoryId,
-  destroy,
 };
