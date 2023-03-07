@@ -75,6 +75,23 @@ const create = async (params) => {
   return await db`INSERT INTO products (user_id, category_id, category_gender, product_name, price, condition, description, stock, size) VALUES(${user_id},${category_id},${category_gender},${product_name},${price},${condition},${description},${stock},${size}) RETURNING *`;
 };
 
+const update = async (params) => {
+  const {
+    id,
+    user_id,
+    category_id,
+    category_gender,
+    product_name,
+    price,
+    condition,
+    description,
+    stock,
+    size,
+  } = params;
+
+  return await db`UPDATE users SET "user_id"= ${user_id}, "category_id"= ${category_id}, "category_gender"= ${category_gender}, "product_name"= ${product_name}, "price"= ${price}, "condition"= ${condition}, "description"= ${description}, "stock"= ${stock}, "size"= ${size}, "updated_at"= ${updatedAt} WHERE id=${id} RETURNING *`;
+};
+
 module.exports = {
   getAll,
   getProductsById,
@@ -82,4 +99,5 @@ module.exports = {
   search,
   create,
   getProductByCategoryId,
+  destroy,
 };

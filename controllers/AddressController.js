@@ -69,14 +69,18 @@ const getAddressByUserId = async (req, res) => {
     const data = await addresses.getAddressByUserId(userId);
 
     if (data.length < 1) {
-      throw { statusCode: 400, message: "Data doesnt exist!" };
+      res.status(200).json({
+        status: true,
+        message: "Data doesnt exist!",
+        data: data,
+      });
+    } else {
+      res.status(200).json({
+        status: true,
+        message: "success",
+        data: data,
+      });
     }
-
-    res.status(200).json({
-      status: true,
-      message: "Success",
-      data: data,
-    });
   } catch (error) {
     res.status(error?.statusCode ?? 500).json({
       status: false,
