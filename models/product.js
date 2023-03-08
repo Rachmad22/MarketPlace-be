@@ -9,7 +9,8 @@ const getAll = async () => {
     FROM product_images 
     WHERE products.id = product_images.product_id
   ) as product_images
-  FROM products LEFT JOIN users ON products.user_id=users.id LEFT JOIN categories ON products.category_id=categories.id`;
+  FROM products LEFT JOIN users ON products.user_id=users.id LEFT JOIN categories ON products.category_id=categories.id
+  ORDER BY products.created_at DESC`;
 };
 
 const getProductsById = async (id) => {
@@ -29,7 +30,8 @@ const getProductsByUserId = async (user_id) => {
     FROM product_images 
     WHERE products.id = product_images.product_id
   ) as product_images 
-  FROM products LEFT JOIN users ON products.user_id=users.id LEFT JOIN categories ON products.category_id=categories.id WHERE products.user_id=${user_id}`;
+  FROM products LEFT JOIN users ON products.user_id=users.id LEFT JOIN categories ON products.category_id=categories.id WHERE products.user_id=${user_id}
+  ORDER BY products.created_at DESC`;
   // return await db`SELECT products.*,users.store_name as store_name FROM products LEFT JOIN users ON products.user_id=users.id `;
 };
 
@@ -40,7 +42,8 @@ const getProductByCategoryId = async (category_id) => {
     FROM product_images 
     WHERE products.id = product_images.product_id
   ) as product_images 
-  FROM products LEFT JOIN users ON products.user_id=users.id LEFT JOIN categories ON products.category_id=categories.id WHERE category_id=${category_id}`;
+  FROM products LEFT JOIN users ON products.user_id=users.id LEFT JOIN categories ON products.category_id=categories.id WHERE category_id=${category_id}
+  ORDER BY products.created_at DESC`;
 };
 
 const search = async (params) => {
