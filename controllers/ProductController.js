@@ -3,6 +3,8 @@ const users = require("../models/users");
 const categories = require("../models/category");
 const productImages = require("../models/productImage");
 const convertData = require("../utils/convertData");
+const { checkSizeUpload, checkExtensionFile } = require("../utils/uploadFile");
+const { uploadCloudinary, deleteCloudinary } = require("../utils/cloudinary");
 
 const { decodeJwtToken } = require("../utils/jwtToken");
 
@@ -173,6 +175,48 @@ const search = async (req, res) => {
   }
 };
 
+const uploadImage = async (file) => {
+  try {
+    let filename = null;
+    const checkSize = checkSizeUpload(file);
+    if (!checkSize) {
+      throw {
+        statusCode: 400,
+        message: "File upload is too large! only support < 1 MB",
+      };
+    }
+
+    // check type extension file upload
+    const allowedFile = checkExtensionFile(file);
+    if (!allowedFile) {
+      throw {
+        statusCode: 400,
+        message: `File is not support! format file must be image`,
+      };
+    }
+
+    // upload file
+    const uploadFile = await uploadCloudinary(file);
+    if (!uploadFile.success) {
+      throw { statusCode: 400, message: "Upload file error!" };
+    } else {
+      filename = uploadFile.urlUpload;
+    }
+
+    return {
+      status: true,
+      url: filename,
+    };
+  } catch (error) {
+    return {
+      status: false,
+      data: {
+        message: error,
+      },
+    };
+  }
+};
+
 const create = async (req, res) => {
   try {
     const {
@@ -228,16 +272,40 @@ const create = async (req, res) => {
       size,
     });
 
-    // create product images
-    if (product_images) {
-      const newProductImages = product_images.map((item) => {
-        return {
-          product_id: createData?.[0]?.id,
-          image: item,
-        };
-      });
+    let file = req.files?.product_images;
+    let images = [];
 
-      await productImages.create({ product_images: newProductImages });
+    if (file) {
+      const fileLength = file.length;
+      if (fileLength) {
+        // images more than 1
+        file.map(async (item, key) => {
+          const urlFile = await uploadImage(item);
+
+          // add new images
+          await productImages.create({
+            product_images: {
+              product_id: createData?.[0]?.id,
+              image: urlFile.url,
+            },
+          });
+        });
+      } else {
+        // image only 1
+        const urlFile = await uploadImage(file);
+        // add new images
+        await productImages.create({
+          product_images: {
+            product_id: createData?.[0]?.id,
+            image: urlFile.url,
+          },
+        });
+      }
+    } else {
+      throw {
+        statusCode: 400,
+        message: "Product image must be required",
+      };
     }
 
     res.status(201).json({
