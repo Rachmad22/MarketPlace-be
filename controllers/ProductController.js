@@ -10,7 +10,8 @@ const { decodeJwtToken } = require("../utils/jwtToken");
 
 const getAll = async (req, res) => {
   try {
-    const data = await products.getAll();
+    const { limit, page } = req.query;
+    const data = await products.getAll({ limit, page });
     if (data?.length < 1) {
       res.status(200).json({
         status: true,
@@ -23,6 +24,8 @@ const getAll = async (req, res) => {
         status: true,
         message: "Success",
         total: data?.length,
+        page: page ?? 1,
+        limit: limit ?? 20,
         data: data,
       });
     }
