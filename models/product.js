@@ -2,7 +2,8 @@ const db = require("../database/index");
 
 const updatedAt = new Date();
 
-const getAll = async () => {
+const getAll = async (params) => {
+  const { limit = 20, page = 1 } = params;
   return await db`SELECT products.*, categories.id as category_id, categories.category_name as category_name,  users.store_name as store_name,
   (
     SELECT COALESCE(json_agg(row_to_json(product_images.*)), '[]'::json) 
@@ -10,7 +11,8 @@ const getAll = async () => {
     WHERE products.id = product_images.product_id
   ) as product_images
   FROM products LEFT JOIN users ON products.user_id=users.id LEFT JOIN categories ON products.category_id=categories.id
-  ORDER BY products.created_at DESC`;
+  ORDER BY products.created_at DESC
+  LIMIT ${limit ?? null} OFFSET ${page ? limit * (page - 1) : 0}`;
 };
 
 const getProductsById = async (id) => {
